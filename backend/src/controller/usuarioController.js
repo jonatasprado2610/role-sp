@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { listarTodosLocais } from '../repository/locaisRepository.js';
+import { buscarLocais } from '../repository/locaisRepository.js';
 import bcrypt from 'bcryptjs';
 
 import { buscarUsuarioPorEmail , buscarUsuarioPorId, inserirUsuario} from '../repository/usuarioRepository.js';
@@ -21,13 +21,28 @@ server.use(express.json());
 
 server.get('/locais', async (req, resp) => {
     try {
-        const resposta = await listarTodosLocais();
+        const { nome, bairro, categoria, faixaPreco, parceiro, notaMinima } = req.query;
+
+        const filtros = {
+            nome: nome?.trim() || undefined,
+            bairro: bairro?.trim() || undefined,
+            categoria: categoria?.trim() || undefined,
+            faixaPreco: faixaPreco?.trim() || undefined,
+            parceiro:
+                parceiro === 'true' ? true :
+                parceiro === 'false' ? false :
+                undefined,
+            notaMinima:
+                notaMinima !== undefined && !Number.isNaN(Number(notaMinima))
+                    ? Number(notaMinima)
+                    : undefined,
+        };
+
+        const resposta = await buscarLocais(filtros);
         resp.send(resposta);
     } catch (err) {
-        console.error('ERRO AO LISTAR OS LOCAIS', err.message);
-        resp.status(500).send({
-            erro: err.message
-        });
+        console.error('ERRO AO BUSCAR OS LOCAIS', err.message);
+        resp.status(500).send({ erro: 'Não foi possível buscar os locais.' });
     }
 });
 

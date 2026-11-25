@@ -3,9 +3,9 @@
 
 <img src="frontend/assets/images/logo.png" alt="Rolê SP" width="200">
 
-# Rolê SP
+# Rolê Sampa
 
-**Descubra São Paulo. Encontre seu próximo rolê.**
+**Descubra São Paulo. Encontre seu próximo rolê!**
 
 Aplicativo de descoberta de locais de lazer, cultura e entretenimento na cidade de São Paulo.
 
@@ -32,7 +32,7 @@ Aplicativo de descoberta de locais de lazer, cultura e entretenimento na cidade 
 
 ## Sobre o projeto
 
-O **Rolê SP** é um aplicativo desenvolvido como projeto acadêmico do curso de Análise e Desenvolvimento de Sistemas (ADS) da FATEC.
+O **Rolê Sampa** é um aplicativo desenvolvido como projeto acadêmico do curso de Análise e Desenvolvimento de Sistemas (ADS) da FATEC.
 
 O projeto tem como propósito facilitar a descoberta de opções de lazer, cultura e entretenimento na cidade de São Paulo, reunindo informações relevantes em uma única plataforma e auxiliando os usuários no planejamento de suas experiências pela cidade.
 
@@ -44,7 +44,7 @@ Essa fragmentação dificulta a descoberta de novos lugares, a comparação de a
 
 ### Proposta de solução
 
-O Rolê SP propõe uma experiência centralizada de descoberta de locais, com mecanismos de busca, filtros e informações que auxiliam o usuário a decidir onde ir e como planejar seu próximo rolê.
+O Rolê Sampa propõe uma experiência centralizada de descoberta de locais, com mecanismos de busca, filtros e informações que auxiliam o usuário a decidir onde ir e como planejar seu próximo rolê.
 
 ### Objetivos
 

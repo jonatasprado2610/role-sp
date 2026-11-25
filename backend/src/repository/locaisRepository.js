@@ -86,3 +86,93 @@ export async function buscarLocais(filtros = {}) {
   const { rows } = await con.query(comando, valores);
   return rows;
 }
+
+export async function buscarLocalPorId(id) {
+  const comando = `
+    SELECT
+      l.id_local AS id,
+      l.nome,
+      l.telefone,
+      l.site,
+      l.como_chegar AS "comoChegar",
+      l.e_parceiro AS "eParceiro",
+      l.atualizado_em AS "atualizadoEm",
+
+      -- Endereço
+      json_build_object(
+        'logradouro', e.logradouro,
+        'numero', e.numero,
+        'bairro', e.bairro,
+        'cep', e.cep,
+        'cidade', e.cidade,
+        'estado', e.estado,
+        'latitude', e.latitude,
+        'longitude', e.longitude
+      ) AS endereco,
+
+      -- Preço
+      json_build_object(
+        'descricao', fp.descricao,
+        'valorEstimado', fp.valor_estimado
+      ) AS preco,
+
+      -- Categorias
+      COALESCE((
+        SELECT json_agg(c.nome ORDER BY c.nome)
+        FROM locais_categorias lc
+        JOIN categorias c ON c.id_categoria = lc.id_categoria
+        WHERE lc.id_local = l.id_local
+      ), '[]'::json) AS categorias,
+
+      -- Horários
+      COALESCE((
+        SELECT json_agg(
+          json_build_object(
+            'diaSemana', h.dia_semana,
+            'abertura', h.horario_abertura,
+            'fechamento', h.horario_fechamento
+          )
+          ORDER BY h.id_horario
+        )
+        FROM horarios_funcionamento h
+        WHERE h.id_local = l.id_local
+      ), '[]'::json) AS horarios,
+
+      -- Acessibilidade
+      (
+        SELECT json_build_object(
+          'rampaAcesso', a.rampa_acesso,
+          'banheiroAdaptado', a.banheiro_adaptado,
+          'estacionamento', a.estacionamento,
+          'arCondicionado', a.ar_condicionado,
+          'wifiGratis', a.wifi_gratis,
+          'seguranca', a.seguranca
+        )
+        FROM acessibilidade_estrutura a
+        WHERE a.id_local = l.id_local
+      ) AS acessibilidade,
+
+      -- Avaliações
+      (
+        SELECT ROUND(AVG(av.nota), 1)::float8
+        FROM avaliacoes av
+        WHERE av.id_local = l.id_local
+      ) AS "notaMedia",
+
+      (
+        SELECT COUNT(*)::int
+        FROM avaliacoes av
+        WHERE av.id_local = l.id_local
+      ) AS "totalAvaliacoes"
+
+    FROM locais l
+    JOIN enderecos e ON e.id_endereco = l.id_endereco
+    JOIN faixas_preco fp ON fp.id_faixa_preco = l.id_faixa_preco
+
+    WHERE l.id_local = $1
+  `;
+
+  const { rows } = await con.query(comando, [id]);
+
+  return rows[0] ?? null;
+}

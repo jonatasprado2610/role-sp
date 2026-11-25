@@ -1,5 +1,8 @@
+
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+
 import { cores, fontes, tamanhos } from '../constants/theme';
 import { Role } from '../data/roles';
 import { formatarNota } from '../utils/formatacao';
@@ -11,9 +14,20 @@ type Props = {
 };
 
 export function CardResultado({ role, onPress }: Props) {
+  const router = useRouter();
+
   return (
     <Pressable
-      onPress={onPress}
+      onPress={
+        onPress ??
+        (() =>
+          router.push({
+            pathname: '/detalhes/[id]',
+            params: {
+              id: String(role.id),
+            },
+          }))
+      }
       accessibilityRole="button"
       accessibilityLabel={`${role.nome}, ${role.categoria}, ${role.regiao}, nota ${formatarNota(role.nota)}, ${role.preco}`}
       style={styles.card}
@@ -24,13 +38,18 @@ export function CardResultado({ role, onPress }: Props) {
         <Text style={styles.categoria}>
           {role.categoria} · {role.regiao}
         </Text>
+
         <Text style={styles.nome} numberOfLines={2}>
           {role.nome}
         </Text>
+
         <View style={styles.nota}>
           <Ionicons name="star-outline" size={16} color={cores.texto} />
-          <Text style={styles.notaTexto}>{formatarNota(role.nota)} · recentes</Text>
+          <Text style={styles.notaTexto}>
+            {formatarNota(role.nota)} · recentes
+          </Text>
         </View>
+
         <Text style={styles.preco}>{role.preco}</Text>
       </View>
     </Pressable>

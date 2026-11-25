@@ -1,4 +1,13 @@
-export const CATEGORIAS = ['Todas', 'Comer', 'Cultura', 'Shows', 'Feiras', 'Ao ar livre'] as const;
+
+export const CATEGORIAS = [
+  'Todas',
+  'Bar',
+  'Balada',
+  'Cultural',
+  'Parque',
+  'Diversão',
+] as const;
+
 
 export const REGIOES = [
   'Todas as regiões',

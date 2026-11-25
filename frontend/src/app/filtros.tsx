@@ -92,7 +92,22 @@ export default function Filtros() {
       </ScrollView>
 
       <View style={styles.rodape}>
-        <Botao titulo="Ver opções" variante="roxo" onPress={() => router.back()} />
+
+        <Botao
+          titulo="Ver opções"
+          variante="roxo"
+          onPress={() =>
+            router.replace({
+              pathname: '/buscar',
+              params: {
+                categoria,
+                regiao,
+                preco,
+              },
+            })
+          }
+        />
+
       </View>
     </SafeAreaView>
   );

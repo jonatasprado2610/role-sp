@@ -1,14 +1,40 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable,   ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AtalhoCategoria } from '../../components/AtalhoCategoria';
 import { CardRole } from '../../components/CardRole';
 import { cores, fontes, tamanhos } from '../../constants/theme';
-import { rolesDestaque } from '../../data/roles';
+import { Role } from '../../data/roles';
+import { buscarLocais } from '../../services/locais';
 
 export default function Explorar() {
   const router = useRouter();
+
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(false);
+
+  useEffect(() => {
+    async function carregarDestaques() {
+      try {
+        setCarregando(true);
+        setErro(false);
+
+        const dados = await buscarLocais();
+
+        setRoles(dados.slice(0, 2));
+      } catch (error) {
+        console.error('Erro ao carregar destaques:', error);
+        setErro(true);
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregarDestaques();
+  }, []);
 
   function irParaBusca(categoria: string = 'Todas') {
     router.navigate({
@@ -35,7 +61,7 @@ export default function Explorar() {
         </Text>
 
         <Pressable
-         onPress={() => irParaBusca()}
+          onPress={() => irParaBusca()}
           accessibilityRole="search"
           accessibilityLabel="Buscar lugar, evento ou bairro"
           style={styles.busca}
@@ -54,7 +80,7 @@ export default function Explorar() {
         <View style={styles.secao}>
           <Text style={styles.secaoTitulo}>Descubra São Paulo</Text>
           <Pressable
-           onPress={() => irParaBusca()}
+            onPress={() => irParaBusca()}
             accessibilityRole="button"
             accessibilityLabel="Ver todos os rolês"
             style={styles.verTodos}
@@ -63,9 +89,25 @@ export default function Explorar() {
           </Pressable>
         </View>
 
-        {rolesDestaque.map((role) => (
-          <CardRole key={role.id} role={role} />
-        ))}
+        {carregando ? (
+          <ActivityIndicator
+            size="large"
+            color={cores.primaria}
+            style={{ marginVertical: 30 }}
+          />
+        ) : erro ? (
+          <Text style={{ color: cores.textoSuave }}>
+            Não foi possível carregar os rolês.
+          </Text>
+        ) : roles.length > 0 ? (
+          roles.map((role) => (
+            <CardRole key={role.id} role={role} />
+          ))
+        ) : (
+          <Text style={{ color: cores.textoSuave }}>
+            Nenhum rolê cadastrado no momento.
+          </Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
